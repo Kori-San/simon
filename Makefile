@@ -1,6 +1,6 @@
 # Settings
-PYTHON_VERS = 3.9 # Need to respect the XX.X format
-VENV_DIR = .venv # Virtual environnement's folder name
+PYTHON_VERS = 3.9
+VENV_DIR = .venv
 
 # /!\ DO NOT CHANGE THOSE
 PYTHON = python$(PYTHON_VERS)
