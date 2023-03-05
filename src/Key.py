@@ -25,6 +25,7 @@ class Key:
 
         # It's loading the sound of the key.
         self.sound = pygame.mixer.Sound("sound/" + self.color + ".wav")
+        self.sound.set_volume(0.25)
             
     def set_mode(self, mode):
         """
