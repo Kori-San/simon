@@ -47,7 +47,7 @@ class Game:
     
     def launch(self) -> None:
         """
-        It sets up the game and then runs the main loop
+        It runs the main loop
         """
         # Calling the setup function.
         self.setup()
@@ -60,6 +60,9 @@ class Game:
 
         # The main loop of the game.
         while self.running:
+            # Setting the mode of all the keys to False.
+            for key in self.board.keys:
+                key.set_mode(False)
 
             # Checking if the user has clicked the close button.
             for event in pygame.event.get():
@@ -80,10 +83,10 @@ class Game:
                     # If the key is touched it will activate the key that the user has clicked on.
                     for key in self.board.keys:
                         if key.touched(pos_x, pos_y):
+                            # print("Touch " + key.color.capitalize()) # Activate for Debug
                             key.activate()
-                            print("Touch " + key.color.capitalize())
-
-                            # If a the key being pressed is the same color as the key currently in queue in the sequence
+                            
+                            # If the key being pressed is the same color as the key currently in queue in the sequence
                             if key.color == self.sequence[sequence_count].color:
                                 # If it is the last key to be pressed on
                                 if sequence_count == len(self.sequence) - 1:
@@ -93,6 +96,7 @@ class Game:
                                 # If it is not the last key then increase the sequence counter
                                 else:
                                     sequence_count += 1
+                            # If the key is not right then "Game Over!"
                             else:
                                 print("\n---\nGame Over!\nMaximum Score:", len(self.sequence) - 1)
                                 return
@@ -102,10 +106,6 @@ class Game:
             # Updating the screen.
             self.clock.tick(self.fps)
             self.board.display()
-            
-            # Setting the mode of all the keys to False.
-            for key in self.board.keys:
-                key.set_mode(False)
     
     def generate_seq(self):
         # First display to avoid black screen causing the player not being  able to see the first key of the first sequence.
