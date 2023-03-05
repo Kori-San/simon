@@ -1,5 +1,6 @@
 from Board import Board
 import pygame
+import random
 
 class Game:
 
@@ -22,7 +23,11 @@ class Game:
         """
         # It initializes the pygame module.
         pygame.init()
-        
+
+        # Initializing the mixer and setting the volume of the music to 25%.
+        pygame.mixer.init()
+        pygame.mixer.music.set_volume(0.25)
+
         # Setting the screen and the board.
         self.screen = pygame.display.set_mode(self.resolution, pygame.DOUBLEBUF)
         self.screen.set_alpha(None)
@@ -47,13 +52,15 @@ class Game:
         # Calling the setup function.
         self.setup()
 
+        # A variable that is used as an index for the sequence array
+        sequence_count = 0
+        
+        # Generate the first key of the sequence
+        self.generate_seq()
+
         # The main loop of the game.
         while self.running:
-            
-            # Setting the mode of all the keys to False.
-            for key in self.board.keys:
-                key.set_mode(False)
-            
+
             # Checking if the user has clicked the close button.
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -66,15 +73,65 @@ class Game:
                         for key in self.board.keys:
                             key.hitbox()
 
-                # Checking if the user has clicked on the screen. If the user has clicked on the screen, then it will
-                # check if the user has clicked on a key.
+                # Checking if the user has clicked on the screen.
                 if event.type == pygame.MOUSEBUTTONDOWN:
+                    # Getting the position of the mouse.
                     pos_x, pos_y = pygame.mouse.get_pos()
+                    # If the key is touched it will activate the key that the user has clicked on.
                     for key in self.board.keys:
                         if key.touched(pos_x, pos_y):
+                            key.activate()
                             print("Touch " + key.color.capitalize())
+
+                            # If a the key being pressed is the same color as the key currently in queue in the sequence
+                            if key.color == self.sequence[sequence_count].color:
+                                # If it is the last key to be pressed on
+                                if sequence_count == len(self.sequence) - 1:
+                                    # Add a new key and reset sequence counter
+                                    self.generate_seq()
+                                    sequence_count = 0
+                                # If it is not the last key then increase the sequence counter
+                                else:
+                                    sequence_count += 1
+                            else:
+                                print("\n---\nGame Over!\nMaximum Score:", len(self.sequence) - 1)
+                                return
+
                             break
 
             # Updating the screen.
             self.clock.tick(self.fps)
+            self.board.display()
+            
+            # Setting the mode of all the keys to False.
+            for key in self.board.keys:
+                key.set_mode(False)
+    
+    def generate_seq(self):
+        # First display to avoid black screen causing the player not being  able to see the first key of the first sequence.
+        self.board.display()
+        
+        # Disable all keys 
+        for key in self.board.keys:
+            key.set_mode(False)
+        
+        # Second display to show a toggled off gameboard (with no key on)
+        self.board.display()
+
+        # Big wait to make people understand that the sequence is going to be played
+        pygame.time.wait(1000)
+
+        # Generate a new key using randint and appending it to the sequence
+        new_key = self.board.keys[random.randint(0,3)]
+        self.sequence.append(new_key)
+        
+        # Play the whole sequence
+        for key in self.sequence:
+            # Activate the key and show it's activation the wait
+            key.activate()
+            self.board.display()
+            pygame.time.wait(500)
+            
+            # Disable the key and refresh display
+            key.set_mode(False)
             self.board.display()

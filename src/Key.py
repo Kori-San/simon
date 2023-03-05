@@ -20,19 +20,23 @@ class Key:
         # It sets the color of the key to the color that was passed in.
         self.color = color
 
-        # It loads the image of the key
+        # It's loading the image of the key and the sound of the key.
         self.sprite = pygame.image.load("assets/keys/off/" + self.color + ".png").convert_alpha()
-    
+
+        # It's loading the sound of the key.
+        self.sound = pygame.mixer.Sound("sound/" + self.color + ".wav")
+            
     def set_mode(self, mode):
         """
         If the mode is on, then the sprite is set to the on version of the key, otherwise it's set to the
         off version
         
         :param mode: Whether the key is on or off
-        """
+        """      
         # Setting the sprite to the on or off version of the key.
         on_off = "on" if mode else "off"
         self.sprite = pygame.image.load("assets/keys/" + on_off + "/" + self.color + ".png").convert_alpha()
+
     
     def set_position(self, x, y) -> None:
         """
@@ -45,19 +49,25 @@ class Key:
         self.x = x
         self.y = y
 
+    def activate(self) -> None:
+        """
+        It's setting the key to on mode and playing the sound of the key
+        """
+        # It's setting the key to on mode and playing the sound of the key.
+        self.set_mode(True)
+        pygame.mixer.Sound.play(self.sound)
+        
     def touched(self, pos_x, pos_y) -> bool:
         """
-        It checks if the mouse is within the key's hitbox. If it is, it sets the key to on mode and returns
+        It checks if the mouse is within the key's hitbox. If it is, it returns
         True. If it isn't, it returns False
         
         :param pos_x: The x position of the mouse
         :param pos_y: The y position of the mouse
         :return: a boolean value.
         """
-        # It checks if the mouse is within the key's hitbox. If it is, it sets the key to on mode and returns
-        # True. If it isn't, it returns False.
+        # It's checking if the mouse is within the key's hitbox.
         if self.x < pos_x < (self.x + self.width) and self.y < pos_y < (self.y + self.height):
-            self.set_mode(True)
             return True
         else:
             return False
